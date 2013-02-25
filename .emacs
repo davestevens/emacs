@@ -42,14 +42,20 @@
 
 ;; Whitespace Mode
 (load "whitespace")
+(load "linum")
 
 ;; PHP Mode
 (load "php-mode")
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
 (add-to-list 'auto-mode-alist '("\\.inc$" . php-mode))
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(gud-gdb-command-name "gdb --annotate=1")
- '(large-file-warning-threshold nil))
+ '(large-file-warning-threshold nil)
+ '(show-trailing-whitespace t))
 (add-hook 'php-mode-hook
 	  (lambda ()
 	    (whitespace-mode 1)))
@@ -67,30 +73,51 @@
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
 ;; jslint
+;(when (load "flymake" t)
+;  (defun flymake-jslint-init ()
+;    (let* ((temp-file (flymake-init-create-temp-buffer-copy
+;                              'flymake-create-temp-inplace))
+;           (local-file (file-relative-name
+;                        temp-file
+;                        (file-name-directory buffer-file-name))))
+;      (list "jslint" (list "--terse" local-file))))
+;  (setq flymake-err-line-patterns
+;        (cons '("^\\(.*\\)(\\([[:digit:]]+\\)):\\(.*\\)$"
+;                1 2 nil 3)
+;                    flymake-err-line-patterns))
+;  (add-to-list 'flymake-allowed-file-name-masks
+;               '("\\.js\\'" flymake-jslint-init))
+;  (require 'flymake-cursor))
+
+;; jshint
 (when (load "flymake" t)
-  (defun flymake-jslint-init ()
+  (defun flymake-jshint-init ()
     (let* ((temp-file (flymake-init-create-temp-buffer-copy
-		       'flymake-create-temp-inplace))
+                              'flymake-create-temp-inplace))
            (local-file (file-relative-name
                         temp-file
                         (file-name-directory buffer-file-name))))
-      (list "jslint.js" (list "--terse" local-file))))
+      (list "jshint"
+            (list local-file))
+      ))
   (setq flymake-err-line-patterns
-	(cons '("^\\(.*\\)(\\([[:digit:]]+\\)):\\(.*\\)$"
-		1 2 nil 3)
-	      flymake-err-line-patterns))
+        (cons '("^.*: line \\([[:digit:]]+\\), col \\([[:digit:]]+\\), \\(.*\\)$"
+                nil 1 2 3)
+              flymake-err-line-patterns))
   (add-to-list 'flymake-allowed-file-name-masks
-               '("\\.js\\'" flymake-jslint-init))
+               '("\\.js\\'" flymake-jshint-init))
   (require 'flymake-cursor))
 
 ;; JS Mode
 (setq js-indent-level 4) ;; Set to 4 else jslint shows errors about whitespace
 (setq-default indent-tabs-mode nil)
+
+;; JSHint
 (add-hook 'js-mode-hook
-	  (lambda ()
-	    (flymake-mode 1)
-	    (whitespace-mode 1)
-	    (define-key js-mode-map "\C-c\C-n" 'flymake-goto-next-error)))
+     (lambda ()
+       (flymake-mode t)
+       (whitespace-mode 1)
+       (define-key js-mode-map "\C-c\C-n" 'flymake-goto-next-error)))
 
 ;; Whitespace Configurations
 (setq whitespace-display-mappings
@@ -101,4 +128,11 @@
         (tab-mark 9 [9655 9] [92 9]) ; 9 TAB, 9655 WHITE RIGHT-POINTING TRIANGLE 「▷」
         ))
 (custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(linum ((t (:background "black" :foreground "brightwhite" :box (:line-width 2 :color "grey75" :style released-button)))))
+ '(whitespace-line ((t (:background "brightblack" :foreground "violet"))))
  '(whitespace-space ((t nil))))
+
